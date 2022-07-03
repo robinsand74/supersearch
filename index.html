@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base target="_blank">
+  <title>Super Search</title>
+  <script src="script.js"></script>
+</head>
+<body onload="docReady()">
+  <h1>Super search</h1>
+  <div id="inputs">
+    <div id="name">
+      <input type="checkbox" name="name"> <label>Name:</label>
+      <input id="name" name="name" placeholder="e.g. John Doe">
+    </div>
+    <div id="email">
+      <input type="checkbox" name="email"> <label>Email:</label>
+      <input id="email" name="email" placeholder=
+      "e.g. john.doe@example.com">
+    </div>
+    <div id="domain">
+      <input type="checkbox" name="domain"> <label>Domain:</label>
+      <input id="domain" name="domain" placeholder=
+      "e.g. example.com">
+    </div>
+    <div id="ip">
+      <input type="checkbox" name="ip"> <label>Ip:</label>
+      <input id="ip" name="ip" placeholder="e.g. 192.168.0.1">
+    </div>
+    <div id="place">
+      <input type="checkbox" name="place"> <label>Place:</label>
+      <input id="place" name="place" placeholder="e.g. London">
+    </div>
+    <div id="geo">
+      <input type="checkbox" name="geo"> <label>Geo:</label>
+      <input id="geo" name="geo" placeholder=
+      "e.g. 51.487222, -0.124167">
+    </div>
+  </div>
+  <hr>
+  <div id="searches"></div>
+</body>
+</html>
