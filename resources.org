@@ -1,0 +1,260 @@
+#+TITLE: tools
+#+OPTIONS: \n:t
+
+* General
+
+- [[https://orgmode.org/guide/][Emacs]] org: Hierarchical note taking with GPG encryption.
+  Start file with:
+  =# -*- coding: utf-8; mode: org -*-=
+
+- [[https://man7.org/linux/man-pages/man1/script.1.html][script]]: record a shell session ([[https://www.geeksforgeeks.org/script-command-in-linux-with-examples/][guide]])
+  Alternatives:
+  - https://asciinema.org/
+
+- VirtualBox: VirtualBox is the most widely used VM Manager for pentesting and OSINT content.
+  [[https://www.nakivo.com/blog/virtualbox-network-setting-guide/][networking]]: =VBoxManage dhcpserver add --network=localnet --server-ip=10.38.1.1 --lower-ip=10.38.1.100 --upper-ip=10.38.1.110 --netmask=255.255.255.0 --enable=
+
+* OPSEC
+
+** Hardening
+
+[[https://www.debian.org/doc/manuals/securing-debian-manual/index.en.html][Securing Debian]] | [[https://cisofy.com/lynis/][Lynis]]
+
+*** KISS
+
+Keep your (virtual) machine as small as simple as you can. Start with the smallest installation and add tools as needed.
+
+So, start your Kali machine from scratch from a netinst image.
+
+*** Stay up to date
+
+#+begin_src
+  apt update
+  apt upgrade
+  apt autoremove
+#+end_src
+
+[[https://wiki.debian.org/UnattendedUpgrades][Unattended Upgrades]]
+
+*** Credentials
+
+Change root password.
+
+Rename default user:
+
+#+begin_src bash
+  pkill -u $OLD_NAME
+  usermod $OLD_NAME -l $NEW_NAME
+  groupmod $OLD_NAME -n $NEW_NAME
+  cd /home/
+  mv $OLD_NAME $NEW_NAME
+  # rename home
+  vi /etc/passwd
+#+end_src
+
+*** [[https://www.linux.com/training-tutorials/introduction-uncomplicated-firewall-ufw/][Uncomplicated Firewall (UFW)]]                                :shell:gui:
+
+Just enable through =gufw=.
+
+*** SSH
+
+Regenerate ssh keys:
+
+#+begin_src
+  rm /etc/ssh/ssh_host_*
+  dpkg-reconfigure openssh-server
+  systemctl restart ssh
+#+end_src
+
+Log out, remove the old key from =~/.ssh/known_hosts= and log back in. Ssh should let you know that the host had a unknown key.
+
+Next, make sure =root= cannot log into ssh directly (option =PermitRootLogin no= in =/etc/ssh/sshd_config=)
+
+*** Login
+    edit =/var/lib/AccountsService/users/<user>=
+
+oud Kali
+
+[[https://www.kali.org/docs/cloud/digitalocean/][Digital Ocean]] | [[https://my.vultr.com/][Vultr]]
+
+For [[https://www.vultr.com/pt/docs/securely-connect-to-your-debian-11-cloud-server-over-vnc][secure VNC]], use VPN of create SSH tunnel :
+=ssh -L 5901:127.0.0.1:5901 -C -N user@your_server_ip=
+
+** Sock puppet
+
+[[https://www.reddit.com/r/OSINT/comments/dp70jr/my_process_for_setting_up_anonymous_sockpuppet/][Guide]]
+- [[https://www.lastpass.com/features/username-generator][username]]
+- [[https://passwordsgenerator.net/][password]]
+- [[https://www.skrill.com/][skrill]]: virtual credit card (needs ID verification)
+  - [[https://cardguru.io/][card guru]]
+
+Temporary contacts:
+- [[https://www.twilio.com/][phone number]]
+- [[https://emailtemp.org/][email]]
+- [[https://receive-smss.com/][sms]]
+
+** Privacy
+- Firefox privacy & security settings
+  - enable-https only mode
+  - don't save logins and passwords
+  - never remember history
+  - enable permanent private browsing (history > custom settings)
+- https://www.torproject.org/
+- [[https://jami.net/][Jami]]: a SIP-compatible distributed peer-to-peer softphone and SIP-based instant messenger
+- [[https://grabify.link/][grabify]] URL shortner/obfuscator and IP logger
+
+  set SystemAccount=true
+
+* Sysop
+
+** shell
+
+- [[https://www.gnu.org/software/coreutils/manual/html_node/index.html][GNU coreutils]]: core utilities which are expected to exist on every operating system (combination of former fileutils, shellutils, and textutils)
+- [[https://www.gnu.org/software/inetutils/manual/html_node/index.html][GNU inetutils]]: common networking utilities
+- strings: shows all strings in a (possibly binary) file
+- [[https://www.kernel.org/doc/man-pages/][man]]
+
+** networking
+
+- [[https://man7.org/linux/man-pages/man8/ip.8.html][ip]]: show / manipulate routing, network devices, interfaces and tunnels
+  Replaces the now obsolete [[https://wiki.linuxfoundation.org/networking/net-tools][net-tools]].
+- [[https://man7.org/linux/man-pages/man8/arp.8.html][arp]]: ARP stands for Address Resolution Protocol, which is used to find the media access control address of a network neighbour for a given IPv4 Address.
+- [[http://www.royhills.co.uk/wiki/index.php/Arp-scan_User_Guide][arp-scan]]: constructs and sends ARP requests to the specified IP addresses, and displays any responses that are received
+- [[https://man.openbsd.org/nslookup][nslookup]]
+- websites:
+  - https://check-host.net/
+  - https://hackertarget.com/reverse-ip-lookup/
+  - https://ipcalc.info/: IP/subnet calculator
+  - https://docs.gns3.com/: emulate, configure, test and troubleshoot virtual and real networks
+    Alternative: [[https://www.netacad.com/courses/packet-tracer][Cisco Packet Tracer]]
+
+* Pentest
+
+[[https://www.kali.org/tools/][Kali Tools]] ([[https://www.educba.com/kali-linux-tools-list/][by category]])
+
+** Network
+
+- [[http://netcat.sourceforge.net/][netcat]] ::reads and writes data across network connections, using the TCP/IP protocol ([[https://www.varonis.com/blog/netcat-commands][guide]])
+- [[https://nmap.org/book/man.html][nmap]]: Network exploration tool and security / port scanner.
+  - [[https://nmap.org/book/nse.html][scripting]]
+  - [[https://nmap.org/zenmap/][Zenmap]] GUI
+- [[https://www.wireshark.org/docs/][Wireshark]]: network analyzer
+  [[https://www.inkyvoxel.com/how-to-enable-monitor-mode/][monitor mode]]
+  Alternatives:
+  - [[http://manual-snort-org.s3-website-us-east-1.amazonaws.com/][Snort]]
+  - [[https://www.ettercap-project.org/][ettercap]]: man in the middle attack suite
+  - [[https://github.com/derv82/wifite2][wifite]] wifi auditing
+- https://www.whatsmyip.org/: Networking tools that operate back at you.
+- https://dnschecker.org/: checks DNS propagation (the time frame it takes for DNS changes to be updated across the Internet)
+
+** Auditing / Vulnerabilities
+
+- [[https://github.com/vanhauser-thc/thc-hydra][hydra]]: brute force password cracker
+  =hydra -l "" -P /usr/share/dirb/wordlists/big.txt $HOST http-post-form "/kzMb5nVYJw/index.php:key=^PASS^&Login=Login:invalid key" -f -V=
+  Alternative: [[https://www.openwall.com/john/doc/][John the Ripper]]
+- [[https://github.com/sqlmapproject/sqlmap/wiki/Introduction][sqlmap]]: Automatic SQL injection and database takeover tool
+  =sqlmap -u "http://$TARGET/kzMb5nVYJw/420search.php?usrtosearch=a" --dbs=
+- OWASP [[https://www.kali.org/tools/dirbuster/][dirbuster]]: attempts to find web server pages and applications ([[https://www.hackingarticles.in/comprehensive-guide-on-dirb-tool/][guide]])
+  Alternatives:
+  - [[https://github.com/nccgroup/dirble][dirble]]
+- [[https://www.aircrack-ng.org/documentation.html][AirCrack-ng]]: WiFi security
+- [[https://cisofy.com/lynis/][Lynis]]: Auditing Unix-based systems
+- [[https://github.com/swisskyrepo/PayloadsAllTheThings][payloads all the things]]: A list of useful payloads and bypass for Web Application Security and Pentest/CTF
+- [[https://www.kali.org/tools/nbtscan/][nbtscan]]: scan for NetBIOS information
+- Wordlists: =/usr/share/wordlists= on Kali
+
+** Web
+
+- [[https://www.zaproxy.org/][Zed Attack Proxy]] (OWASP ZAP): Web app scanner
+  - [[https://github.com/sullo/nikto/wiki][Nikto]]
+  - [[https://gitlab.com/kalilinux/packages/skipfish/][Skipfish]]
+  - [[https://github.com/wpscanteam/wpscan/wiki/WPScan-User-Documentation][WPScan]]: WordPress Security Scanner
+- [[https://github.com/beefproject/beef/wiki][BeEF]]: client-side
+
+* OSINT
+
+[[https://osintframework.com/][framework]] | [[https://osintool.com/][OSINTtool.com]] | [[https://blog.reknowledge.tech/blog/osint-analyst-replaced-by-automation][Cycle]] | [[https://github.com/TCM-Course-Resources/Open-Source-Intellingence-Resources][TCM]] | [[https://docs.google.com/spreadsheets/u/0/d/18U1qcaPaqIF8ERVLI-g5Or3gUbv0qP_-JUtc0pbEs0E/htmlview][Tool comparison]] | [[https://mobile.twitter.com/quiztime][Verif!cation Quiz Bot]]
+
+** [[https://en.wikipedia.org/wiki/List_of_search_engines][Search engines]] ([[https://www.stanventures.com/blog/top-search-engines-list/][list]])
+  - https://www.google.com/
+  - [[https://www.google.com/imghp][Google reverse image search]]
+    Face recognition:
+    - [[https://tineye.com/]]
+    - https://pimeyes.com/
+    - http://pictriev.com/
+    See also:
+    - [[https://chrome.google.com/webstore/detail/who-stole-my-pictures/mcdbnfhkikiofkkicppioekloflmaibd][Who stole my picture]] (Chrome plugin)
+  - https://www.bing.com/
+  - https://duckduckgo.com/
+  - https://www.yahoo.com/
+  - https://archive.org/
+  - https://www.namecheckr.com/: Check a brand/user name on a wide range of platforms
+    Alternatives:
+    - https://whatsmyname.app/
+    - https://sherlock-project.github.io/
+  - [[https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators][Twitter search operators]]
+    - [[https://github.com/twintproject/twint/wiki/Basic-usage][twint]] twitter scraping
+  - https://www.shodan.io/: Internet-connected devices ([[https://blog.shodan.io/understanding-the-shodan-search-query-syntax/][Query syntax]])
+  - http://insecam.org/: directory of online surveillance security cameras
+  - https://scholar.google.com/
+  - https://www.baidu.com/ (China)
+  - https://yandex.ru/ (Russia)
+  - https://www.naver.com/ (South-Korean)
+
+*** Collection
+
+- [[https://github.com/lanmaster53/recon-ng/wiki/Features][recon-ng]]: reconnaissance framework
+  Alternatives:
+  - [[https://sn0int.readthedocs.io/en/stable/usage.html][sn0int]]
+  - OWASP [[https://owasp.org/www-project-amass/][Amass]]
+  - [[https://docs.maltego.com/][Maltego]] (freemium, industry standard?)
+  - [[https://portswigger.net/burp][Burp Suite]] (freemium)
+- [[https://www.mapchannels.com/][team maps]] a collection of mapping tools, including multi-pane
+  More:
+  - https://www.google.com/maps
+  - https://www.google.com/earth/
+  - [[https://www.iplocation.net/][IP location]]
+  - [[https://geohack.toolforge.org/][geohack]]: used by wikipedia
+  - [[https://openinframap.org/][maps of infrastructure]]
+  - https://www.suncalc.org/: sun calculations
+- https://www.flightradar24.com/
+  Alternative: https://uk.flightaware.com/
+- [[https://dnsdumpster.com/]]: domain research tool that can discover hosts related to a domain
+  See also: [[https://github.com/aboul3la/Sublist3r][Sublist3r]]
+- [[https://github.com/s0md3v/Photon/wiki/Usage][Photon]]: web site crawling
+- [[https://sundowndev.github.io/phoneinfoga/usage/][phoneinfoga]]: scan international phone numbers
+- [[https://www.strava.com/heatmap][runners heatmap]]
+
+** Email checking
+
+- [[https://github.com/laramies/theharvester][theharvester]]
+- https://verify-email.org/ (https://mailtester.ninja/)
+- [[http://metricsparrow.com/toolkit/email-permutator/][email permutator]]
+- https://haveibeenpwned.com/
+
+* Digital Forensics
+
+[[https://forensicswiki.xyz/wiki/index.php?title=Category:Top-Level][Wiki]] | [[https://github.com/mesquidar/ForensicsTools][Tools]] | [[https://www.nirsoft.net/][Nirsoft]] | [[https://www.open.edu/openlearn/science-maths-technology/digital-forensics/][Course]]
+
+** Acquisition
+
+- [[https://www.caine-live.net/][Caine]]: live distribution for digital forensics
+- [[http://sleuthkit.org/autopsy/docs/user-docs/4.19.3/][Autopsy]]: evidence recovery
+- [[https://guymager.sourceforge.io/][guymager]]: forensic imager for media acquisition
+  See also:
+  - [[https://www.winfe.net/][Windows Forensics Environment]]
+
+** Analysis                                                          :shell:
+
+- [[http://wiki.sleuthkit.org/index.php?title=FS_Analysis][file system]]
+- [[https://github.com/volatilityfoundation/volatility/wiki/Volatility-Usage][memory]]
+- [[https://www.xplico.org/][xplico]]: network
+- [[https://artifacts.readthedocs.io/en/latest/][forensic artifacts db]]
+- [[https://www.foxtonforensics.com/][browser history]]
+- [[https://www.nirsoft.net/utils/computer_activity_view.html][recent activity]]
+- [[https://github.com/GuidoBartoli/sherloq][sherloq]]: images
+  - [[https://exiftool.org/][exiftool]]
+  - [[https://github.com/osde8info/stegosuite][stegosuite]] finds hidden info in images
+- [[https://github.com/laramies/metagoofil][metagoofil]]: extracts metadata from documents
+- https://searchcode.com/
+- https://fileinfo.com/
